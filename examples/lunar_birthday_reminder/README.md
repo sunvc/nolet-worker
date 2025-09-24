@@ -11,6 +11,6 @@
 UTC 1点执行, 上海时间UTC+8即9点执行
 
 
-如果使用的是Bark-Worker且是在同一帐号同一域名下的Worker, 需要使用Worker Binding来进行Worker间相互调用. 
+如果使用的是NoLet-Worker且是在同一帐号同一域名下的Worker, 需要使用Worker Binding来进行Worker间相互调用. 
 
 ## 如果您认为此项目对您有帮助,请Star!

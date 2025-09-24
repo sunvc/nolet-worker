@@ -1,5 +1,5 @@
 <p align="center">
-    <h1 align="center">Bark-Worker</h1>
+    <h1 align="center">Nolet-Worker</h1>
 </p>
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -18,19 +18,19 @@ English | **[中文文档](README.zh.md)**
 <!-- > [!CAUTION]
 > For D1 Alpha Users: On August 1, 2024, D1 alpha databases will stop accepting live SQL queries. See [Migration Guide](https://developers.cloudflare.com/d1/platform/alpha-migration/) -->
 
-Bark-Worker is a [Bark-Server](https://github.com/Finb/bark-server) implenmention on Cloudflare Worker. It provides privacy-aware users with a cheap and private bark backend. 
+NoLet-Worker is a [NoLets](https://github.com/sunvc/NoLets) implenmention on Cloudflare Worker. It provides privacy-aware users with a cheap and private nolet backend. 
 
-### What is [Bark](https://github.com/Finb/Bark)?
-[Bark](https://github.com/Finb/Bark) is an iOS App which allows you to push customed notifications to your iPhone.
+### What is [NoLet](https://github.com/sunvc/NoLet)?
+[NoLet](https://github.com/sunvc/NoLet) is an iOS App which allows you to push customed notifications to your iPhone.
 
 > [!NOTE]
 > A domain is required if worker.dev is unavailable in your country/region
 
 ## Features
-- Full Bark-Server APIs support
+- Full NoLets-Server APIs support
     - `register`
     - `ping`
-    - `healthz`
+    - `health`
     - `info`
     - `push`
 - Path based parameters resolve
@@ -49,7 +49,7 @@ Bark-Worker is a [Bark-Server](https://github.com/Finb/bark-server) implenmentio
 > [!NOTE]
 > The Cloudflare API Token must have D1 permission.
 
-[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cwxiaos/bark-worker)
+[![Deploy to Cloudflare Workers](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/sunvc/nolet-worker)
 
 ### Or manually deploy
 

@@ -28,10 +28,10 @@ async function handleEvent(event, env, ctx) {
     if(matchingEvent){
         // console.log(`[INFO] ${date.toLocaleString()}: Event Match Success.`)
 
-        // 使用Bark-Server
+        // 使用NoLet-Server
         // return await fetch(`${serverURL}/${title}/${matchingEvent[1]}`)
 
-        // 如果使用Bark-Worker, 同一帐号同一域名下Worker间相互调用使用Worker Binding, 否则会报错, 这里可以随便填个域名, 但path要遵循规范
+        // 如果使用NoLet-Worker, 同一帐号同一域名下Worker间相互调用使用Worker Binding, 否则会报错, 这里可以随便填个域名, 但path要遵循规范
         return await env.APNs.fetch(`${serverURL}/${title}/${matchingEvent[1]}`)
     }
 

@@ -30,7 +30,7 @@ curl -X "POST" "$SERVER_ADDRESS/$DEVICE_KEY" \
   "badge": 1,
   "icon": "https://day.app/assets/images/avatar.jpg",
   "group": "test",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0"
 }'
 
@@ -44,9 +44,9 @@ curl -X "POST" "$SERVER_ADDRESS/push" \
   "title": "Test Title In Body",
   "subtitle": "Test Subtitle In Body",
   "badge": 1,
-  "icon": "https://day.app/assets/images/avatar.jpg",
+  "icon": "https://wzs.app/logo.png",
   "group": "test",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0"
 }'
 
@@ -115,7 +115,7 @@ curl -X "POST" "$SERVER_ADDRESS/push" \
      -d $'{
   "body": "Test Batch Message In Body",
   "group": "testBatchPush",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0",
   "device_keys": ["'$BATCH_PUSH_KEY_1'", "'$BATCH_PUSH_KEY_2'", "'$BATCH_PUSH_KEY_3'"]
 }'
@@ -127,7 +127,7 @@ curl -X "POST" "$SERVER_ADDRESS/push" \
      -d $'{
   "body": "Test Batch Message In Body",
   "group": "testBatchPush",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0",
   "device_keys": "'$BATCH_PUSH_KEY_1','$BATCH_PUSH_KEY_2','$BATCH_PUSH_KEY_3'"
 }'
@@ -211,7 +211,7 @@ curl -X "POST" "$SERVER_ADDRESS/push" \
      -d $'{
   "body": "Test Batch Message In Body",
   "group": "testBatchPush",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0",
   "device_keys": ",,"
 }'
@@ -223,7 +223,7 @@ curl -X "POST" "$SERVER_ADDRESS/push" \
      -d $'{
   "body": "Test Batch Message In Body",
   "group": "testBatchPush",
-  "url": "https://mritd.com",
+  "url": "https://wzs.app",
   "isArchive": "0",
   "device_keys": []
 }'
