@@ -1,0 +1,37 @@
+/**
+ * For more details on how to configure Wrangler, refer to:
+ * https://developers.cloudflare.com/workers/wrangler/configuration/
+ */
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "nolets",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-12-09",
+	"compatibility_flags": ["nodejs_compat"],
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "database",
+			"database_name": "database-nolet",
+			"database_id": "<unique-ID-for-your-database>"
+		}
+	],
+	// "kv_namespaces": [
+	// 	{
+	// 		"binding": "databaseKV",
+	// 		"id": "<unique-ID-for-your-database>"
+	// 	}
+	// ],
+	"vars": {
+		"ALLOW_NEW_DEVICE": "true",
+		"ALLOW_QUERY_NUMS": "true",
+		"ROOT_PATH": "/"
+	},
+	"assets": {
+		"binding": "ASSETS",
+		"run_worker_first": true,
+		"directory": "./public"
+	}
+}

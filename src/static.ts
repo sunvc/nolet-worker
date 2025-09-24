@@ -1,0 +1,1273 @@
+const VERSION = 'v0.0.1';
+const BUILD = '2025-09-20 16:01:13';
+const ARCH = 'Node';
+const COMMIT = '2bec695dff5d3c71559ac61088a970ad0de59b48';
+
+const LOGORAW = `
+<svg  id="noletLogo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500" fill="currentColor">
+  <polygon class="cls-1" points="99.8 457.6 67 493.4 20.4 482.3 6.5 435.5 39.2 399.6 85.9 410.8 99.8 457.6"/>
+  <path class="cls-1" d="M493.5,54v343.4l-48.1,49.2h-.1c0,0-44.4-70-44.4-70v-209.7L133.2,440.6c0,.1-.2.1-.2.1,0,0-.4,0-.4-.4v-132.9l201.6-206.2H107.5l-58.1-28.5L114,6.6h333.2c.4,0,.8,0,1.2,0,25,.6,45.1,21.6,45.1,47.3Z"/>
+  <path class="cls-1" d="M493.5,57v-3c0-25.7-20.1-46.6-45.1-47.3,25,.5,45.2,21.5,45.2,47.3s0,2,0,3Z"/>
+</svg>
+`;
+
+const LogoSvgImage = (color?: string, svg?: boolean) => {
+	let color1 = '#ff0000';
+	if (color && color !== '') {
+		color1 = '#' + color;
+	}
+	const logoSvg = LOGORAW.replace('currentColor', color1);
+	if (svg) {
+		return logoSvg;
+	}
+	return 'data:image/svg+xml;base64,' + btoa(logoSvg);
+};
+
+const IndexHtml = (icp: string = '', url: string = 'https://wzs.app', docs: string = 'https://wiki.wzs.app') => {
+	return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>无字书 - Smart Message Push</title>
+    <link rel="icon" href="https://s3.wzs.app/logo.png"/>
+    <link rel="apple-touch-icon" href="https://s3.wzs.app/logo.png"/>
+    <meta name="theme-color" content="#4D6BFE"/>
+    <meta property="og:title" content="无字书 - Smart Message Push"/>
+    <meta
+            name="description"
+            content="无字书 - AI-driven message push platform, supporting end-to-end encryption and custom servers"
+    />
+    <meta
+            property="og:description"
+            content="无字书 - AI-driven message push platform, supporting end-to-end encryption and custom servers"
+    />
+    <meta property="og:url" content="https://s3.wzs.app/logo.png">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://s3.wzs.app/og.png">
+
+    <meta name="twitter:card" content="summary"/>
+    <!-- Add more modern fonts and icon libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+
+    <script src="https://s3.wzs.app/qrcode.js"></script>
+
+    <script>
+        (function () {
+            try {
+                var savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {
+            }
+        })();
+    </script>
+
+    <style>
+
+        @keyframes bounce {
+            0%,
+            20%,
+            53%,
+            80%,
+            100% {
+                transform: translateY(0);
+                animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+            }
+            40%,
+            43% {
+                transform: translateY(-15px);
+                animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+            }
+            70% {
+                transform: translateY(-8px);
+                animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+            }
+            90% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes float {
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(2deg);
+            }
+        }
+
+        @keyframes wiggle {
+            0%,
+            7% {
+                transform: rotateZ(0);
+            }
+            15% {
+                transform: rotateZ(-5deg);
+            }
+            20% {
+                transform: rotateZ(3deg);
+            }
+            25% {
+                transform: rotateZ(-3deg);
+            }
+            30% {
+                transform: rotateZ(2deg);
+            }
+            35% {
+                transform: rotateZ(-1deg);
+            }
+            40%,
+            100% {
+                transform: rotateZ(0);
+            }
+        }
+
+        @keyframes glow {
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(77, 107, 254, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(77, 107, 254, 0.6),
+                0 0 40px rgba(77, 107, 254, 0.4);
+            }
+        }
+
+
+        .main-content {
+            transition: opacity 0.5s ease-in;
+        }
+
+        :root {
+            --primary-dark: #1c3344;
+            --primary-blue: #4d6bfe;
+            --accent-teal: #2498ff;
+            --text-primary: #1a1a1a;
+            --text-primary-c: #ffffff;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --background: #fcfcfa;
+            --card-bg: #ffffff;
+            --border-color: #e6e6e6;
+            --gradient-primary: linear-gradient(
+                    135deg,
+                    var(--primary-dark),
+                    #2d4b65
+            );
+            --gradient-blue: linear-gradient(
+                    135deg,
+                    var(--primary-blue),
+                    var(--accent-teal)
+            );
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
+            --radius-sm: 8px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 40px;
+            --glass-bg: #ffffff1a;
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+
+        [data-theme="dark"] {
+            --primary-dark: #bde1ff;
+            --text-primary: #ffffff;
+            --text-primary-c: #000000;
+            --text-secondary: #b0b0b0;
+            --text-light: #888888;
+            --background: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --border-color: #404040;
+            --gradient-primary: linear-gradient(135deg, #bde1ff, #8cc5ff);
+            --glass-bg: #00000033;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-color {
+            color: var(--text-primary-c);
+        }
+
+        [data-theme="dark"] body {
+            background: #202124;
+        }
+
+        [data-theme="dark"] footer {
+            background: #0f0f0f;
+        }
+
+        /* 在线链接服务仅供平台体验和调试使用，平台不承诺服务的稳定性，企业客户需下载字体包自行发布使用并做好备份。 */
+        @font-face {
+            font-family: "阿里妈妈方圆体 VF Regular";
+            src: url("//s3.wzs.app/AlimamaFangYuanTiVF-Thin.woff") format("woff");
+            font-variation-settings: "BEVL" 1, "wght" 400;
+            font-display: swap;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "阿里妈妈方圆体 VF Regular", sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(
+                    0deg,
+                    #40ffef 0%,
+                    rgba(0, 242, 254, 0.7) 100%
+            );
+
+            margin: 0;
+            padding: 0;
+            font-family: "阿里妈妈方圆体 VF Regular", sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Header */
+        header {
+            padding: 1.5rem 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            border-bottom: 3px solid var(--glass-border);
+        }
+
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 100vw;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .github-link {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 1.25rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .github-link:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-size: 1.25rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        [data-theme="dark"] .theme-toggle {
+            background: var(--glass-bg);
+            border-color: var(--glass-border);
+        }
+
+        [data-theme="dark"] .theme-toggle:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 180px 0 120px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 100%;
+            height: 200%;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 70%;
+            height: 100%;
+            background-image: url(${LogoSvgImage('ff00000f', false)});
+            background-repeat: no-repeat;
+            background-size: contain;
+            background-position: center right;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: floatLogo 8s ease-in-out infinite;
+            perspective: 1000px; /* 值越小，透视效果越强 */
+            display: inline-block;
+            transform-style: preserve-3d;
+            transform-origin: 0 100%;
+
+        }
+
+        @keyframes floatLogo {
+            0% {
+                transform: rotate3d(1, -1, 0, 0deg) translateY(-50%);
+            }
+            50% {
+                transform: rotate3d(1, -1, 0, 360deg) translateY(-50%);
+            }
+            60% {
+                transform: rotate3d(1, -1, 0, 360deg) translateY(-50%);
+            }
+            70% {
+                transform: rotate3d(1, -1, 0, 360deg) translateY(-50%);
+            }
+            80% {
+                transform: rotate3d(1, -1, 0, 360deg) translateY(-50%);
+            }
+            100% {
+                transform: rotate3d(1, -1, 0, 360deg) translateY(-50%);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--primary-dark);
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            font-size: 1.375rem;
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+            max-width: 100vw;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* New Hero Layout */
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            align-items: center;
+            margin: 0 auto;
+        }
+
+        .hero-qr {
+            text-align: center;
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: var(--glass-bg);
+            border-radius: var(--radius-xl);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            padding: 1rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .qr-code:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-qr p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin: 20px 0;
+        }
+
+        .hero-text {
+            text-align: left;
+        }
+
+        .hero-text h1 {
+            margin-left: 0;
+            margin-right: 0;
+            text-align: left;
+        }
+
+        .hero-text p {
+            margin-left: 0;
+            margin-right: 0;
+            text-align: left;
+            max-width: none;
+        }
+
+        .hero-text .hero-buttons {
+            justify-content: flex-start;
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: var(--primary-dark);
+            padding: 1rem 2rem;
+            border: 2px solid var(--primary-dark);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .secondary-button:hover {
+            background: var(--primary-dark);
+            color: var(--text-primary-c);
+            transform: translateY(-2px);
+            animation: bounce 0.8s ease, glow 1.2s ease-in-out infinite;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 1.5rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            opacity: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: scale(1.02);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-dark);
+
+        }
+
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: var(--shadow-lg);
+            animation: bounce 0.8s ease, wiggle 1s ease,
+            glow 1.5s ease-in-out infinite;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+            font-size: 0.95rem;
+            font-weight: 400;
+            margin-bottom: 0;
+        }
+
+        .download-qr img {
+            width: 180px;
+            height: 180px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-dark);
+            padding: 15px 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .footer-logo img {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+        }
+
+        .footer-column h4 {
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-column a {
+            display: block;
+            color: var(--text-light);
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .social-links a:hover {
+            color: white;
+        }
+
+        .social-links svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .footer-bottom {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin: 0 20px;
+        }
+
+        .footer-icp {
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin: 0;
+            gap: 1rem;
+            display: flex;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .nav {
+                padding: 0 1rem;
+            }
+
+            .theme-toggle-h img {
+                height: 40px;
+                width: auto;
+            }
+
+            .hero {
+                padding: 120px 0 60px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+                margin-bottom: 1rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+                padding: 0;
+                line-height: 1.5;
+                margin-bottom: 2rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+
+            .hero-text {
+                text-align: center;
+            }
+
+            .hero-text h1 {
+                text-align: center;
+            }
+
+            .hero-text p {
+                text-align: center;
+            }
+
+            .hero-text .hero-buttons {
+                justify-content: center;
+            }
+
+            .hero-qr p {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .feature-card {
+                padding: 2rem 1.5rem;
+                margin: 0 0.5rem;
+            }
+
+            .feature-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+
+            .feature-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .feature-card p {
+                font-size: 1rem;
+            }
+
+            footer {
+                padding: 15px 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .footer-brand {
+                justify-content: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-column h4 {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .footer-column a {
+                font-size: 0.9rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .social-links a {
+                font-size: 0.9rem;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+<!-- Main Content -->
+<div class="main-content" id="mainContent">
+    <header>
+        <nav class="nav">
+            <a href="/" class="logo">
+                <svg width="40" height="40" style="color: red">
+                    <use href="#noletLogo"></use>
+                </svg>
+
+                <span data-i18n="brand">无字书</span>
+            </a>
+
+            <div class="nav-actions">
+                <a
+                        href="https://github.com/sunvc/NoLets"
+                        class="github-link"
+                        target="_blank"
+                        aria-label="GitHub Project"
+                >
+                    <!-- Static GitHub icon to avoid SMIL animation issues -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                         aria-hidden="true" role="img">
+                        <path fill="currentColor"
+                              d="M12 .5C5.73.5.5 5.73.5 12A11.5 11.5 0 0 0 8.34 22.94c.57.1.78-.24.78-.54v-2.1c-3.19.7-3.86-1.36-3.86-1.36-.52-1.31-1.27-1.66-1.27-1.66-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.24 3.33.95.1-.75.4-1.24.73-1.53-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.77.11 3.06.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.26 5.69.41.35.78 1.04.78 2.1v3.12c0 .3.2.65.79.54A11.5 11.5 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/>
+                    </svg>
+                </a>
+                <a
+                        href="https://t.me/PushToMe"
+                        class="github-link"
+                        target="_blank"
+                        aria-label="Telegram Channel"
+                >
+                    <!-- Static Telegram icon to avoid SMIL animation issues -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"
+                         aria-hidden="true" role="img">
+                        <path fill="currentColor"
+                              d="M21.5 3.5L3 10.5c-.9.36-.88 1.65.02 2.01l4.86 1.91l1.86 6.05c.27.87 1.4 1.06 1.93.33l2.65-3.58l4.77 3.48c.83.61 2.01.15 2.25-.88l3.07-14.46c.22-1.04-.77-1.9-1.81-1.51zM9.74 13.51l8.57-5.27c.43-.26.89.29.54.66l-7.04 7.45l-.31 3.7l-1.76-5.54z"/>
+                    </svg>
+                </a>
+                <button
+                        class="theme-toggle"
+                        id="themeToggle"
+                        aria-label="Toggle Theme"
+                >
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-qr" style="padding-top: 50px">
+                    <div class="qr-code" id="qrcode"></div>
+                    <p data-i18n="hero_qr_hint">Scan QR code to add server</p>
+                </div>
+                <div class="hero-text">
+                    <h1 data-i18n="hero_title">Redefining Message Push Experience</h1>
+                    <p data-i18n="hero_subtitle">
+                        无字书 A privacy-focused, secure and controllable custom
+                        notification push tool.<br/>
+                        Free, Simple, Secure, Ready to Use
+                    </p>
+
+                    <div class="hero-buttons">
+                        <a
+                                href="https://apps.apple.com/app/id6615073345"
+                                class="secondary-button"
+                        >
+                            <i class="bi bi-apple" style="margin-right: 5px"></i>
+                            <span data-i18n="btn_appstore">App Store</span>
+                        </a>
+                        <a href="${docs}" class="secondary-button"><span
+                                data-i18n="btn_docs"> Documentation </span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container" style="padding-top: 70px">
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="150">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M14 15h3v1h-3zm-3 0h2v1h-2zm-4 0h3v1H7z"/>
+                            <path fill="currentColor"
+                                  d="M19 7h-1V6h-5V3h-2v3H6v1H5v1H4v10h1v1h1v1h12v-1h1v-1h1V8h-1zm-2 10v1H7v-1H6V9h1V8h10v1h1v8zm6-6v5h-1v1h-1v-7h1v1zM2 10h1v7H2v-1H1v-5h1z"/>
+                            <path fill="currentColor" d="M14 10h3v3h-3zm-7 0h3v3H7z"/>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="feature1_title">Smart AI Processing</h3>
+                    <p data-i18n="feature1_desc">
+                        Automatic summarization, translation, content optimization
+                    </p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                  d="M10.5 15h3l-.575-3.225q.5-.25.788-.725T14 10q0-.825-.587-1.412T12 8t-1.412.588T10 10q0 .575.288 1.05t.787.725zm1.5 7q-3.475-.875-5.738-3.988T4 11.1V5l8-3l8 3v6.1q0 3.8-2.262 6.913T12 22m0-2.1q2.6-.825 4.3-3.3t1.7-5.5V6.375l-6-2.25l-6 2.25V11.1q0 3.025 1.7 5.5t4.3 3.3m0-7.9"/>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="feature2_title">End-to-End Encryption</h3>
+                    <p data-i18n="feature2_desc">
+                        AES-256 encrypted transmission, ensuring absolute data security
+                    </p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="250">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 16 16">
+                            <g fill="currentColor">
+                                <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5M5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1z"/>
+                                <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="feature3_title">Long Message Processing</h3>
+                    <p data-i18n="feature3_desc">
+                        Smart segmentation and merging, supporting content of any length
+                    </p>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 16 16">
+                            <g fill="currentColor">
+                                <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708z"/>
+                                <path d="M11.886 9.46c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.044c-.613-.181-.613-1.049 0-1.23l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0a1.5 1.5 0 0 0 3 0"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3 data-i18n="feature4_title">Custom Server</h3>
+                    <p data-i18n="feature4_desc">
+                        Support for private deployment, flexible push rule configuration
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div style="height: 50px"></div>
+    </section>
+
+    <footer id="about">
+        <div class="footer-brand">
+            <div class="footer-logo">
+                <svg width="40" height="40" style="color: #00b7ff">
+                    <use href="#noletLogo"></use>
+                </svg>
+                <span style="padding-left: 20px">NoLet</span>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-icp" style="text-align: center">
+                <a
+                        href="https://beian.miit.gov.cn/"
+                        style="color: white; text-decoration: none; font-size: 16px"
+                >${icp}</a
+                >
+            </p>
+            <p class="footer-privacy" style="text-align: center" >
+                <a href="https://wiki.wzs.app/en/policy" data-i18n="footer_privacy"  style="color: white; text-decoration: none;">Privacy</a>
+            </p>
+            <p class="footer-copyright" style="text-align: center" data-i18n="footer_copyright">
+                &copy; 2024 无字书. All rights reserved.
+            </p>
+        </div>
+    </footer>
+</div>
+
+<div style="display: none">
+    ${LOGORAW}
+</div>
+
+<iframe id="myFrame" style="width:0; height:0; border:0;"></iframe>
+
+<script>
+    window.addEventListener('error', function (event) {
+        console.log('JS 错误捕获：', event.message);
+        console.log('发生在文件：', event.filename, '第', event.lineno, '行');
+        console.log('错误对象：', event.error);
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initialize AOS animation library
+        if (window.AOS) {
+            AOS.init({
+                duration: 800,
+                easing: "ease-in-out",
+                once: true,
+                mirror: false,
+            });
+        }
+
+        // Get server address
+
+        // Add scroll animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px",
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll(".feature-card").forEach((card) => {
+            card.style.opacity = "0";
+            card.style.transform = "translateY(30px)";
+            card.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+            observer.observe(card);
+        });
+
+        // Mouse movement effect
+        document.addEventListener("mousemove", (e) => {
+            const cards = document.querySelectorAll(".feature-card");
+            cards.forEach((card) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                card.style.setProperty("--mouse-x", \`\${x}px\`);
+                card.style.setProperty("--mouse-y", \`\${y}px\`);
+            });
+        });
+
+        // Enhanced animation effect on mouse hover
+        document
+            .querySelectorAll(".feature-card, .cta-button, .secondary-button")
+            .forEach((element) => {
+                element.addEventListener("mouseenter", () => {
+                    element.style.transform = "scale(1.05)";
+                    element.style.boxShadow = "0 20px 40px rgba(0, 0, 0, 0.2)";
+                });
+
+                element.addEventListener("mouseleave", () => {
+                    element.style.transform = "";
+                    element.style.boxShadow = "";
+                });
+            });
+
+        // Random micro-movement effect
+        setInterval(() => {
+            const elements = document.querySelectorAll(".feature-icon, .qr-code");
+            elements.forEach((el) => {
+                if (Math.random() > 0.7) {
+                    el.style.transform = \`rotate(\${
+                        Math.random() * 4 - 2
+                    }deg)\`;
+                    setTimeout(() => {
+                        el.style.transform = "";
+                    }, 300);
+                }
+            });
+        }, 2000);
+
+        // Theme switching function
+        const themeToggle = document.getElementById("themeToggle");
+        const themeIcon = themeToggle.querySelector(".theme-icon");
+
+        // Check locally stored theme preference
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark") {
+            document.documentElement.setAttribute("data-theme", "dark");
+            themeIcon.textContent = "☀️";
+        }
+
+        themeToggle.addEventListener("click", () => {
+            const currentTheme =
+                document.documentElement.getAttribute("data-theme");
+
+            if (currentTheme === "dark") {
+                document.documentElement.removeAttribute("data-theme");
+                localStorage.setItem("theme", "light");
+                themeIcon.textContent = "🌙";
+            } else {
+                document.documentElement.setAttribute("data-theme", "dark");
+                localStorage.setItem("theme", "dark");
+                themeIcon.textContent = "☀️";
+            }
+        });
+    });
+    let qrcodeElement = document.getElementById("qrcode")
+
+    function generateQRCode() {
+        // Get current server URL
+        const serverUrl = "${url}";
+        // Generate QR code
+        new QRCode(qrcodeElement, {
+            text: serverUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H,
+        });
+
+    }
+
+    qrcodeElement.addEventListener("click", (event) => {
+        window.location = "${url}"
+    })
+    // i18n translations and auto-detect
+    const translations = {
+        zh: {
+            meta_title: "无字书 - 智能消息推送",
+            meta_description: "无字书 - AI 驱动的消息推送平台，支持端到端加密与自定义服务器。",
+            brand: "无字书",
+            hero_qr_hint: "扫码添加服务器",
+            hero_title: "重新定义消息推送体验",
+            hero_subtitle: "无字书 一款注重隐私、安全可控的自定义消息推送工具。<br/>自由、简单、安全、即刻可用",
+            btn_appstore: "App Store",
+            btn_docs: "文档",
+            feature1_title: "智能 AI 处理",
+            feature1_desc: "自动摘要、翻译、内容优化",
+            feature2_title: "端到端加密",
+            feature2_desc: "AES-256 加密传输，保障数据绝对安全",
+            feature3_title: "长消息处理",
+            feature3_desc: "智能分段与合并，支持任意长度内容",
+            feature4_title: "自定义服务器",
+            feature4_desc: "支持私有化部署，灵活配置推送规则",
+            footer_copyright: "© 2024 无字书。保留所有权利。",
+            footer_privacy: "隐私政策"
+        },
+        en: {
+            meta_title: "NoLet - Smart Message Push",
+            meta_description: "NoLet - AI-driven message push platform supporting end-to-end encryption and custom servers.",
+            brand: "NoLet",
+            hero_qr_hint: "Scan QR code to add server",
+            hero_title: "Redefining Message Push Experience",
+            hero_subtitle: "NoLet, a privacy-focused, secure and controllable custom notification push tool.<br/>Free, Simple, Secure, Ready to Use",
+            btn_appstore: "App Store",
+            btn_docs: "Documentation",
+            feature1_title: "Smart AI Processing",
+            feature1_desc: "Automatic summarization, translation, content optimization",
+            feature2_title: "End-to-End Encryption",
+            feature2_desc: "AES-256 encrypted transmission, ensuring absolute data security",
+            feature3_title: "Long Message Processing",
+            feature3_desc: "Smart segmentation and merging, supporting content of any length",
+            feature4_title: "Custom Server",
+            feature4_desc: "Support for private deployment, flexible push rule configuration",
+            footer_copyright: "© 2024 NoLet. All rights reserved.",
+            footer_privacy: "Privacy Policy"
+        },
+        ko: {
+            meta_title: "노렛 - 스마트 메시지 푸시",
+            meta_description: "노렛 - AI 기반 메시지 푸시 플랫폼, 종단간 암호화와 커스텀 서버 지원.",
+            brand: "NoLet",
+            hero_qr_hint: "QR 코드를 스캔하여 서버 추가",
+            hero_title: "메시지 푸시 경험 재정의",
+            hero_subtitle: "NoLet은 프라이버시에 집중하고, 안전하고, 제어 가능한 커스텀 알림 푸시 도구입니다.<br/>자유롭고, 간단하고, 안전하며, 바로 사용 가능",
+            btn_appstore: "앱 스토어",
+            btn_docs: "문서",
+            feature1_title: "스마트 AI 처리",
+            feature1_desc: "자동 요약, 번역, 콘텐츠 최적화",
+            feature2_title: "종단간 암호화",
+            feature2_desc: "AES-256 암호화 전송으로 절대적인 데이터 보안 보장",
+            feature3_title: "장문 처리",
+            feature3_desc: "지능형 분할 및 병합, 모든 길이의 콘텐츠 지원",
+            feature4_title: "커스텀 서버",
+            feature4_desc: "프라이빗 배포 지원, 유연한 푸시 규칙 구성",
+            footer_copyright: "© 2024 NoLet. 모든 권리 보유。",
+            footer_privacy: "Privacy Policy"
+        },
+        ja: {
+            meta_title: "NoLet - スマートメッセージプッシュ",
+            meta_description: "NoLet - AI駆動のメッセージプッシュプラットフォーム。エンドツーエンド暗号化とカスタムサーバーに対応。",
+            brand: "NoLet",
+            hero_qr_hint: "QRコードをスキャンしてサーバーを追加",
+            hero_title: "メッセージプッシュ体験を再定義",
+            hero_subtitle: "NoLetはプライバシー重視で、安全に制御可能なカスタム通知プッシュツールです。<br/>自由、シンプル、安全、すぐに使えます",
+            btn_appstore: "App Store",
+            btn_docs: "ドキュメント",
+            feature1_title: "スマートAI処理",
+            feature1_desc: "自動要約、翻訳、コンテンツ最適化",
+            feature2_title: "エンドツーエンド暗号化",
+            feature2_desc: "AES-256暗号化伝送により絶対的なデータセキュリティを保証",
+            feature3_title: "長文処理",
+            feature3_desc: "スマートな分割と結合で、あらゆる長さのコンテンツをサポート",
+            feature4_title: "カスタムサーバー",
+            feature4_desc: "プライベート展開をサポート、柔軟なプッシュルール設定",
+            footer_copyright: "© 2024 NoLet. 無断転載を禁ず。",
+            footer_privacy: "Privacy Policy"
+        }
+    };
+
+    function detectLanguage() {
+        const saved = (function () {
+            try {
+                return localStorage.getItem('lang');
+            } catch (e) {
+                return null;
+            }
+        })();
+        if (saved) return saved;
+        const raw = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
+        const l = String(raw).toLowerCase();
+        if (l.startsWith('zh')) return 'zh';
+        if (l.startsWith('ko')) return 'ko';
+        if (l.startsWith('ja')) return 'ja';
+        return 'en';
+    }
+
+    function applyTranslations(lang) {
+        const dict = translations[lang] || translations.en;
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+                el.innerHTML = dict[key];
+            }
+        });
+        // Update meta and html lang
+        document.title = dict.meta_title;
+        const desc = document.querySelector('meta[name="description"]');
+        if (desc) desc.setAttribute('content', dict.meta_description);
+        const ogTitle = document.querySelector('meta[property="og:title"]');
+        if (ogTitle) ogTitle.setAttribute('content', dict.meta_title);
+        const ogDesc = document.querySelector('meta[property="og:description"]');
+        if (ogDesc) ogDesc.setAttribute('content', dict.meta_description);
+        document.documentElement.setAttribute('lang', lang);
+    }
+
+    (function initLang() {
+        const initialLang = detectLanguage();
+        try {
+            localStorage.setItem('lang', initialLang);
+        } catch (e) {
+        }
+        applyTranslations(initialLang);
+    })();
+
+    generateQRCode();
+
+    document.getElementById('myFrame').src = "nolet:\/\/server?text=${url}";
+
+</script>
+</body>
+</html>
+`;
+};
+
+export { IndexHtml, LOGORAW, LogoSvgImage, VERSION, BUILD, ARCH, COMMIT };
