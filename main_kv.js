@@ -21,8 +21,8 @@ async function handleRequest(request, env, ctx) {
         case "/ping": {
             return handler.ping(searchParams)
         }
-        case "/healthz": {
-            return handler.healthz(searchParams)
+        case "/health": {
+            return handler.health(searchParams)
         }
         case "/info": {
             if (!util.validateBasicAuth(request, basicAuth)) {
@@ -38,6 +38,7 @@ async function handleRequest(request, env, ctx) {
         }
         default: {
             const pathParts = realPathname.split('/')
+
             if (pathParts[1]) {
                 if (!util.validateBasicAuth(request, basicAuth)) {
                     return new Response('Unauthorized', {
@@ -48,6 +49,7 @@ async function handleRequest(request, env, ctx) {
                         }
                     })
                 }
+
                 const contentType = request.headers.get('content-type')
                 let requestBody = {}
 
@@ -82,16 +84,29 @@ async function handleRequest(request, env, ctx) {
                             })
                         }
                     }
+                    let normalizeKeys =  (obj) => {
+                        const newObj = {};
+                        for (const [key, value] of Object.entries(obj)) {
+                            // 转小写，替换掉 - 和 _
+                            const newKey = key.toLowerCase().replace(/[-_]/g, "");
+                            newObj[newKey] = value;
+                        }
+                        return newObj;
+                    }
 
-                    if (requestBody.device_keys && typeof requestBody.device_keys === 'string') {
-                        if (requestBody.device_keys.startsWith('[') || requestBody.device_keys.endsWith(']')) {
-                            requestBody.device_keys = JSON.parse(requestBody.device_keys)
+                    requestBody = normalizeKeys(requestBody)
+
+
+
+                    if (requestBody.devicekeys && typeof requestBody.devicekeys === 'string') {
+                        if (requestBody.devicekeys.startsWith('[') || requestBody.devicekeys.endsWith(']')) {
+                            requestBody.devicekeys = JSON.parse(requestBody.devicekeys)
                         } else {
-                            requestBody.device_keys = (decodeURIComponent(requestBody.device_keys).trim()).split(',').map(item => item.replace(/"/g, '').trim())
+                            requestBody.devicekeys = (decodeURIComponent(requestBody.devicekeys).trim()).split(',').map(item => item.replace(/"/g, '').trim())
                         }
 
-                        if (typeof requestBody.device_keys === 'string') {
-                            requestBody.device_keys = [requestBody.device_keys]
+                        if (typeof requestBody.devicekeys === 'string') {
+                            requestBody.devicekeys = [requestBody.devicekeys]
                         }
                     }
                 } catch (error) {
@@ -107,25 +122,25 @@ async function handleRequest(request, env, ctx) {
                     })
                 }
 
-                if (requestBody.device_keys && requestBody.device_keys.length > 0) {
+                if (requestBody.devicekeys && requestBody.devicekeys.length > 0) {
                     return new Response(JSON.stringify({
                         'code': 200,
                         'message': 'success',
-                        'data': await Promise.all(requestBody.device_keys.map(async (device_key) => {
-                            if (!device_key) {
+                        'data': await Promise.all(requestBody.devicekeys.map(async (devicekey) => {
+                            if (!devicekey) {
                                 return {
                                     code: 400,
                                     message: 'device key is empty',
-                                    device_key: device_key,
+                                    key: devicekey,
                                 }
                             }
 
-                            const response = await handler.push({...requestBody, device_key})
+                            const response = await handler.push({...requestBody, devicekey})
                             const responseBody = await response.json()
                             return {
                                 code: response.status,
                                 message: responseBody.message,
-                                device_key: device_key,
+                                key: devicekey,
                             }
                         })),
                         'timestamp': util.getTimestamp(),
@@ -138,10 +153,10 @@ async function handleRequest(request, env, ctx) {
                 }
 
                 if (realPathname != '/push') {
-                    requestBody.device_key = pathParts[1]
+                    requestBody.devicekey = pathParts[1]
                 }
 
-                if (!requestBody.device_key) {
+                if (!requestBody.devicekey) {
                     return new Response(JSON.stringify({
                         'code': 400,
                         'message': 'device key is empty',
@@ -173,308 +188,325 @@ async function handleRequest(request, env, ctx) {
 
 class Handler {
     constructor(env, options) {
-        this.version = "v2.2.5"
-        this.build = "2025-09-20 16:01:13"
-        this.arch = "js"
-        this.commit = "ea5f35bb9a823524653f20548ea9d5f22b746b0d"
-        this.allowNewDevice = options.allowNewDevice
-        this.allowQueryNums = options.allowQueryNums
-        const db = new Database(env)
+        this.version = "v2.2.5";
+        this.build = "2025-09-20 16:01:13";
+        this.arch = "js";
+        this.commit = "ea5f35bb9a823524653f20548ea9d5f22b746b0d";
+        this.allowNewDevice = options.allowNewDevice;
+        this.allowQueryNums = options.allowQueryNums;
+        const db = new Database(env);
 
         this.register = async (parameters) => {
-            const deviceToken = parameters.get('devicetoken')
-            let key = parameters.get('key')
+            const deviceToken = parameters.token;
+            let key = parameters.key;
 
             if (!deviceToken) {
-                return new Response(JSON.stringify({
-                    'code': 400,
-                    'message': 'device token is empty',
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: 400,
-                    headers: {
-                        'content-type': 'application/json',
-                    }
-                })
-            }
-
-            if (!(key && await db.deviceTokenByKey(key))){
-                if (this.allowNewDevice) {
-                    key = await util.newShortUUID()
-                } else {
-                    return new Response(JSON.stringify({
-                        'code': 500,
-                        'message': "device registration failed: register disabled",
-                    }), {
-                        status: 500,
+                return new Response(
+                    JSON.stringify({
+                        code: 400,
+                        message: "device token is empty",
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: 400,
                         headers: {
-                            'content-type': 'application/json',
+                            "content-type": "application/json",
+                        },
+                    }
+                );
+            }
+
+            if (!(key && (await db.deviceTokenByKey(key)))) {
+                if (this.allowNewDevice) {
+                    key = await util.newShortUUID();
+                } else {
+                    return new Response(
+                        JSON.stringify({
+                            code: 500,
+                            message: "device registration failed: register disabled",
+                        }),
+                        {
+                            status: 500,
+                            headers: {
+                                "content-type": "application/json",
+                            },
                         }
-                    })
+                    );
                 }
             }
 
-            await db.saveDeviceTokenByKey(key, deviceToken)
+            await db.saveDeviceTokenByKey(key, deviceToken);
 
-            return new Response(JSON.stringify({
-                'code': 200,
-                'message': 'success',
-                'timestamp': util.getTimestamp(),
-                'data': {
-                    'key': key,
-                    'device_key': key,
-                    'device_token': deviceToken,
-                },
-            }), {
-                status: 200,
-                headers: {
-                    'content-type': 'application/json',
+            return new Response(
+                JSON.stringify({
+                    code: 200,
+                    message: "success",
+                    timestamp: util.getTimestamp(),
+                    data: {
+                        key: key,
+                        token: deviceToken,
+                    },
+                }),
+                {
+                    status: 200,
+                    headers: {
+                        "content-type": "application/json",
+                    },
                 }
-            })
-        }
+            );
+        };
 
         this.ping = async (parameters) => {
-            return new Response(JSON.stringify({
-                'code': 200,
-                'message': 'pong',
-                'timestamp': util.getTimestamp(),
-            }), {
-                status: 200,
-                headers: {
-                    'content-type': 'application/json',
+            return new Response(
+                JSON.stringify({
+                    code: 200,
+                    message: "pong",
+                    timestamp: util.getTimestamp(),
+                }),
+                {
+                    status: 200,
+                    headers: {
+                        "content-type": "application/json",
+                    },
                 }
-            })
-        }
+            );
+        };
 
-        this.healthz = async (parameters) => {
-            return new Response("ok", {
+        this.health = async (parameters) => {
+            return new Response("OK", {
                 status: 200,
                 headers: {
-                    'content-type': 'text/plain',
-                }
-            })
-        }
+                    "content-type": "text/plain",
+                },
+            });
+        };
 
         this.info = async (parameters) => {
             if (this.allowQueryNums) {
-                this.devices = await db.countAll()
+                this.devices = await db.countAll();
             }
 
-            return new Response(JSON.stringify({
-                'version': this.version,
-                'build': this.build,
-                'arch': this.arch,
-                'commit': this.commit,
-                'devices': this.devices,
-            }), {
-                status: 200,
-                headers: {
-                    'content-type': 'application/json',
+            return new Response(
+                JSON.stringify({
+                    version: this.version,
+                    build: this.build,
+                    arch: this.arch,
+                    commit: this.commit,
+                    devices: this.devices,
+                }),
+                {
+                    status: 200,
+                    headers: {
+                        "content-type": "application/json",
+                    },
                 }
-            })
-        }
+            );
+        };
 
         this.push = async (parameters) => {
-            const deviceToken = await db.deviceTokenByKey(parameters.device_key)
+            const deviceToken = await db.deviceTokenByKey(parameters.devicekey);
 
             if (deviceToken === undefined) {
-                return new Response(JSON.stringify({
-                    'code': 400,
-                    'message': `failed to get device token: failed to get [${parameters.device_key}] device token from database`,
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: 400,
-                    headers: {
-                        'content-type': 'application/json',
+                return new Response(
+                    JSON.stringify({
+                        code: 400,
+                        message: `failed to get device token: failed to get [${parameters.devicekey}] device token from database`,
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            "content-type": "application/json",
+                        },
                     }
-                })
+                );
             }
 
             if (!deviceToken) {
-                return new Response(JSON.stringify({
-                    'code': 400,
-                    'message': 'device token invalid',
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: 400,
-                    headers: {
-                        'content-type': 'application/json',
+                return new Response(
+                    JSON.stringify({
+                        code: 400,
+                        message: "device token invalid",
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: 400,
+                        headers: {
+                            "content-type": "application/json",
+                        },
                     }
-                })
+                );
             }
 
-            let title = parameters.title || undefined
-            let subtitle = parameters.subtitle || undefined
-            let body = parameters.body || undefined
-
+            let title = parameters.title || undefined;
+            let subtitle = parameters.subtitle || undefined;
+            let body = parameters.body || parameters.message || parameters.content || parameters.data || parameters.text || undefined;
+            let markdown = parameters.md || parameters.markdown || undefined;
+            console.log(markdown,!!markdown)
             try {
                 if (title) {
-                    title = decodeURIComponent(title.replaceAll("\\+","%20"))
+                    title = decodeURIComponent(title.replaceAll("\\+", "%20"));
                 }
-                
+
                 if (subtitle) {
-                    subtitle = decodeURIComponent(subtitle.replaceAll("\\+","%20"))
+                    subtitle = decodeURIComponent(subtitle.replaceAll("\\+", "%20"));
                 }
-                
+
                 if (body) {
-                    body = decodeURIComponent(body.replaceAll("\\+","%20"))
+                    body = decodeURIComponent(body.replaceAll("\\+", "%20"));
+                }
+
+                if (markdown) {
+                    body = decodeURIComponent(markdown.replaceAll("\\+", "%20"));
                 }
             } catch (error) {
-                return new Response(JSON.stringify({
-                    'code': 500,
-                    'meaasge': `url path parse failed: ${error}`,
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: 500,
-                    headers: {
-                        'content-type': 'application/json',
+                return new Response(
+                    JSON.stringify({
+                        code: 500,
+                        meaasge: `url path parse failed: ${error}`,
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: 500,
+                        headers: {
+                            "content-type": "application/json",
+                        },
                     }
-                })
+                );
             }
 
-            let sound = parameters.sound || undefined
+            let sound = parameters.sound || undefined;
             if (sound) {
-                if (!sound.endsWith('.caf')) {
-                    sound += '.caf'
+                if (!sound.endsWith(".caf")) {
+                    sound += ".caf";
                 }
             } else {
-                sound = '1107'
+                sound = "1107";
             }
 
-            const group = parameters.group || undefined
-            
-            const call = parameters.call || undefined
-            const isArchive = parameters.isArchive || undefined
-            const icon = parameters.icon || undefined
-            const ciphertext = parameters.ciphertext || undefined
-            const level = parameters.level || undefined
-            const volume = parameters.volume || undefined
-            const url = parameters.url || undefined
-            const image = parameters.image || undefined
-            const copy = parameters.copy || undefined
-            const badge = parameters.badge || undefined
-            const autoCopy = parameters.autoCopy || undefined
-            const action = parameters.action || undefined
-            const iv = parameters.iv || undefined
-            const id = parameters.id || undefined
-            const _delete = parameters.delete || undefined
+            const group = parameters.group || undefined;
+            const id = parameters.id || undefined;
 
+            const _delete = !title && !subtitle && !body && id;
+            
             // https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification
             const aps = {
-                'aps': (_delete) ? {
-                    'content-available': 1,
-                    'mutable-content': 1,
-                } : {
-                    'alert': {
-                        'title': title,
-                        'subtitle': subtitle,
-                        'body': (!title && !subtitle && !body) ? 'Empty Message' : body,
-                        'launch-image': undefined,
-                        'title-loc-key': undefined,
-                        'title-loc-args': undefined,
-                        'subtitle-loc-key': undefined,
-                        'subtitle-loc-args': undefined,
-                        'loc-key': undefined,
-                        'loc-args': undefined,
+                aps: _delete
+                    ? {
+                        "content-available": 1,
+                        "mutable-content": 1,
+                    }
+                    : {
+                        alert: {
+                            title: title,
+                            subtitle: subtitle,
+                            body: !title && !subtitle && !body ? "Empty Message" : body,
+                            "launch-image": undefined,
+                            "title-loc-key": undefined,
+                            "title-loc-args": undefined,
+                            "subtitle-loc-key": undefined,
+                            "subtitle-loc-args": undefined,
+                            "loc-key": undefined,
+                            "loc-args": undefined,
+                        },
+                        badge: undefined,
+                        sound: sound,
+                        "thread-id": group,
+                        category: markdown ? "markdown" : "myNotificationCategory",
+                        "content-available": undefined,
+                        "mutable-content": 1,
+                        "target-content-id": id,
+                        "interruption-level": undefined,
+                        "relevance-score": undefined,
+                        "filter-criteria": undefined,
+                        "stale-date": undefined,
+                        "content-state": undefined,
+                        timestamp: undefined,
+                        event: undefined,
+                        "dimissal-date": undefined,
+                        "attributes-type": undefined,
+                        attributes: undefined,
                     },
-                    'badge': undefined,
-                    'sound': sound,
-                    'thread-id': group,
-                    'category': 'myNotificationCategory',
-                    'content-available': undefined,
-                    'mutable-content': 1,
-                    'target-content-id': undefined,
-                    'interruption-level': undefined,
-                    'relevance-score': undefined,
-                    'filter-criteria': undefined,
-                    'stale-date': undefined,
-                    'content-state': undefined,
-                    'timestamp': undefined,
-                    'event': undefined,
-                    'dimissal-date': undefined,
-                    'attributes-type': undefined,
-                    'attributes': undefined,
-                },
-                // ExtParams
-                'group': group,
-                'call': call,
-                'isarchive': isArchive,
-                'icon': icon,
-                'ciphertext': ciphertext,
-                'level': level,
-                'volume': volume,
-                'url': url,
-                'copy': copy,
-                'badge': badge,
-                'autocopy': autoCopy,
-                'action': action,
-                'iv': iv,
-                'image': image,
-                'id': id,
-                'delete': _delete,
+            };
+
+            const excludeKeys = ["title", "subtitle", "body", "id", "sound", "md", "markdown", "text", "message", "content", "data", "devicekey"];
+            for (const [key, value] of Object.entries(parameters)) {
+                if (!excludeKeys.includes(key) && value) {
+                    aps[key] = value;
+                }
             }
 
             const headers = {
-                'apns-topic': undefined,
-                'apns-id': undefined,
-                'apns-collapse-id': id,
-                'apns-priority': undefined,
-                'apns-expiration': undefined,
-                'apns-push-type': (_delete) ? 'background' : 'alert',
-            }
+                "apns-topic": undefined,
+                "apns-id": undefined,
+                "apns-collapse-id": id,
+                "apns-priority": undefined,
+                "apns-expiration": undefined,
+                "apns-push-type": _delete ? "background" : "alert",
+            };
 
-            const apns = new APNs(db)
-            const response = await apns.push(deviceToken, headers, aps)
+            const apns = new APNs(db);
+            const response = await apns.push(deviceToken, headers, aps);
 
             if (response.status === 200) {
-                return new Response(JSON.stringify({
-                    'code': 200,
-                    'message': 'success',
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: 200,
-                    headers: {
-                        'content-type': 'application/json',
+                return new Response(
+                    JSON.stringify({
+                        code: 200,
+                        message: "success",
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: 200,
+                        headers: {
+                            "content-type": "application/json",
+                        },
                     }
-                })
+                );
             } else {
-                let message
-                const responseText = await response.text()
-                
+                let message;
+                const responseText = await response.text();
+
                 try {
-                    message = JSON.parse(responseText).reason
+                    message = JSON.parse(responseText).reason;
                 } catch (err) {
-                    message = responseText
+                    message = responseText;
                 }
 
-                if ((response.status === 410) || ((response.status === 400) && (message.includes('BadDeviceToken')))) {
-                    await db.saveDeviceTokenByKey(parameters.device_key, '')
+                if (
+                    response.status === 410 ||
+                    (response.status === 400 && message.includes("BadDeviceToken"))
+                ) {
+                    await db.saveDeviceTokenByKey(parameters.devicekey, "");
                 }
 
-                return new Response(JSON.stringify({
-                    'code': response.status,
-                    'message': `push failed: ${message}`,
-                    'timestamp': util.getTimestamp(),
-                }), {
-                    status: response.status,
-                    headers: {
-                        'content-type': 'application/json',
+                return new Response(
+                    JSON.stringify({
+                        code: response.status,
+                        message: `push failed: ${message}`,
+                        timestamp: util.getTimestamp(),
+                    }),
+                    {
+                        status: response.status,
+                        headers: {
+                            "content-type": "application/json",
+                        },
                     }
-                })
+                );
             }
-        }
+        };
     }
 }
+
 
 class APNs {
     constructor(db) {
         const generateAuthToken = async () => {
             const TOKEN_KEY = `
             -----BEGIN PRIVATE KEY-----
-            MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQg4vtC3g5L5HgKGJ2+
-            T1eA0tOivREvEAY2g+juRXJkYL2gCgYIKoZIzj0DAQehRANCAASmOs3JkSyoGEWZ
-            sUGxFs/4pw1rIlSV2IC19M8u3G5kq36upOwyFWj9Gi3Ejc9d3sC7+SHRqXrEAJow
-            8/7tRpV+
+            MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgvjopbchDpzJNojnc
+            o7ErdZQFZM7Qxho6m61gqZuGVRigCgYIKoZIzj0DAQehRANCAAQ8ReU0fBNg+sA+
+            ZdDf3w+8FRQxFBKSD/Opt7n3tmtnmnl9Vrtw/nUXX4ldasxA2gErXR4YbEL9Z+uJ
+            REJP/5bp
             -----END PRIVATE KEY-----
             `
 
@@ -483,8 +515,8 @@ class APNs {
             // Decode private key
             const privateKeyArrayBuffer = util.base64ToArrayBuffer(privateKeyPEM)
             const privateKey = await crypto.subtle.importKey('pkcs8', privateKeyArrayBuffer, { name: 'ECDSA', namedCurve: 'P-256', }, false, ['sign'])
-            const TEAM_ID = '5U8LBRXG3A'
-            const AUTH_KEY_ID = 'LH4T9V5U4R'
+            const TEAM_ID = 'FUWV6U942Q'
+            const AUTH_KEY_ID = 'BNY5GUGV38'
             // Generate the JWT token
             const JWT_ISSUE_TIME = util.getTimestamp()
             const JWT_HEADER = btoa(JSON.stringify({ alg: 'ES256', kid: AUTH_KEY_ID })).replace('+', '-').replace('/', '_').replace(/=+$/, '')
@@ -514,7 +546,7 @@ class APNs {
         }
 
         this.push = async (deviceToken, headers, aps) => {
-            const TOPIC = 'me.fin.bark'
+            const TOPIC = 'me.uuneo.Meoworld'
             const APNS_HOST_NAME = 'api.push.apple.com'
             const AUTHENTICATION_TOKEN = await getAuthToken()
 

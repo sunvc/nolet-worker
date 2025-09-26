@@ -1,8 +1,8 @@
 {
-    "name": "bark-worker",
-    "description": "Bark Server on Cloudflare Worker",
+    "name": "nolets",
+    "description": "NoLet Server on Cloudflare Worker",
     "cloudflare": {
-        "label": "Bark Server",
+        "label": "NoLet Server",
         "products": [
             "Workers",
             "D1"
@@ -10,7 +10,7 @@
         "categories": [],
         "icon_urls": [],
         "docs_url": "https://developers.cloudflare.com/workers/",
-        "preview_image_url": "https://github.com/cwxiaos/bark-worker/blob/master/doc/images/bark.jpeg",
+        "preview_image_url": "https://github.com/sunvc/nolet-worker/blob/master/doc/images/logo.png",
         "dash": true
     },
     "devDependencies": {
