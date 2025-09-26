@@ -115,7 +115,7 @@
 
 ## 注册
 
-至此, 可以使用 Bark APP 或 浏览器等工具测试服务器
+至此, 可以使用 NoLet APP 或 浏览器等工具测试服务器
 
 <p align="center">
     <img src="images/setup/Screenshot from 2024-02-19 08-35-13.png">

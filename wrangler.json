@@ -1,5 +1,5 @@
 {
-    "name": "bark-worker",
+    "name": "nolets",
     "main": "main.js",
     "compatibility_date": "2025-03-01",
     "compatibility_flags": [
@@ -11,8 +11,8 @@
     "d1_databases": [
         {
             "binding": "database",
-            "database_name": "database-bark",
-            "database_id": "<unique-ID-for-your-database>"
+            "database_name": "database-nolet",
+            "database_id": "5a017e6a-896c-451a-97d5-57f3388dc3e1"
         }
     ],
     "vars": {

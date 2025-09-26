@@ -115,7 +115,7 @@ If you see Response includes `devices: 0`, the Deploy is Succeed
 
 ## Register
 
-Now you can use Bark APP to add the Server, or you can use curl or browser to test the server
+Now you can use NoLet APP to add the Server, or you can use curl or browser to test the server
 
 <p align="center">
     <img src="images/setup/Screenshot from 2024-02-19 08-35-13.png">

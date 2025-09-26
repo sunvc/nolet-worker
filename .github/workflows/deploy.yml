@@ -47,13 +47,13 @@ jobs:
         run: |
           set -x
           DB_LIST=$(wrangler d1 list --json)
-          DB_ID=$(echo $DB_LIST | jq -r '.[] | select(.name == "database-bark") | .uuid')
+          DB_ID=$(echo $DB_LIST | jq -r '.[] | select(.name == "database-nolet") | .uuid')
       
           if [ -z "$DB_ID" ]; then
-            CREATE_OUTPUT=$(wrangler d1 create database-bark)
+            CREATE_OUTPUT=$(wrangler d1 create database-nolet)
             DB_ID=$(echo "$CREATE_OUTPUT" | sed -n 's/.*"database_id": "\([a-f0-9-]*\)".*/\1/p')
           else
-            echo "Found existing database-bark database"
+            echo "Found existing database-nolet database"
           fi
       
           echo "Database ID: $DB_ID"
