@@ -1,5 +1,5 @@
 {
-    "name": "nolet-worker",
+    "name": "nolets",
     "main": "main.js",
     "compatibility_date": "2025-03-01",
     "compatibility_flags": [
