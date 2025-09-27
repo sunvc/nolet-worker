@@ -342,7 +342,7 @@ class Handler {
             let subtitle = parameters.subtitle || undefined;
             let body = parameters.body || parameters.message || parameters.content || parameters.data || parameters.text || undefined;
             let markdown = parameters.md || parameters.markdown || undefined;
-            console.log(markdown,!!markdown)
+
             try {
                 if (title) {
                     title = decodeURIComponent(title.replaceAll("\\+", "%20"));
@@ -429,7 +429,7 @@ class Handler {
                     },
             };
 
-            const excludeKeys = ["title", "subtitle", "body", "id", "sound", "md", "markdown", "text", "message", "content", "data", "devicekey"];
+            const excludeKeys = ["title", "subtitle", "body",  "sound", "md", "markdown", "text", "message", "content", "data", "devicekey"];
             for (const [key, value] of Object.entries(parameters)) {
                 if (!excludeKeys.includes(key) && value) {
                     aps[key] = value;

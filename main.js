@@ -526,7 +526,7 @@ class Handler {
                 }
             }
 
-            console.info("aps:", aps);
+           
 
             const headers = {
                 "apns-topic": undefined,
