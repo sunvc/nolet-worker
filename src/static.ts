@@ -3,6 +3,19 @@ const BUILD = '2025-09-20 16:01:13';
 const ARCH = 'Node';
 const COMMIT = '2bec695dff5d3c71559ac61088a970ad0de59b48';
 
+const TOPIC = 'me.uuneo.Meoworld';
+const TEAM_ID = 'FUWV6U942Q';
+const AUTH_KEY_ID = 'BNY5GUGV38';
+const APNS_HOST_NAME = 'api.push.apple.com';
+const TOKEN_KEY = `
+-----BEGIN PRIVATE KEY-----
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgvjopbchDpzJNojnc
+o7ErdZQFZM7Qxho6m61gqZuGVRigCgYIKoZIzj0DAQehRANCAAQ8ReU0fBNg+sA+
+ZdDf3w+8FRQxFBKSD/Opt7n3tmtnmnl9Vrtw/nUXX4ldasxA2gErXR4YbEL9Z+uJ
+REJP/5bp
+-----END PRIVATE KEY-----
+`;
+
 const LOGORAW = `
 <svg  id="noletLogo" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 500 500" fill="currentColor">
   <polygon class="cls-1" points="99.8 457.6 67 493.4 20.4 482.3 6.5 435.5 39.2 399.6 85.9 410.8 99.8 457.6"/>
@@ -1270,4 +1283,4 @@ const IndexHtml = (icp: string = '', url: string = 'https://wzs.app', docs: stri
 `;
 };
 
-export { IndexHtml, LOGORAW, LogoSvgImage, VERSION, BUILD, ARCH, COMMIT };
+export { IndexHtml, LOGORAW, LogoSvgImage, VERSION, BUILD, ARCH, COMMIT, TEAM_ID, AUTH_KEY_ID, TOPIC, APNS_HOST_NAME, TOKEN_KEY };

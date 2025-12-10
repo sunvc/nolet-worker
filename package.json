@@ -15,6 +15,7 @@
 		"dash": true
 	},
 	"scripts": {
+		"check": "tsc --noEmit",
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",

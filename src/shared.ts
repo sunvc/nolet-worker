@@ -1,5 +1,5 @@
-import type { Database, APNsHeaders, ApsPayload, PushParameters, RequestBodyMap, ServerStats } from './types';
-import { IndexHtml, VERSION, BUILD, ARCH, COMMIT } from './static';
+import type { Database, APNsHeaders, AlertPayload, ApsPayload, PushParameters, RequestBodyMap, ServerStats } from './types';
+import { IndexHtml, TOKEN_KEY, VERSION, BUILD, ARCH, COMMIT, TEAM_ID, AUTH_KEY_ID, TOPIC, APNS_HOST_NAME } from './static';
 
 function jsonResponse(body: Record<string, unknown>) {
 	return new Response(JSON.stringify({ ...body, timestamp: util.getTimestamp() }), {
@@ -181,15 +181,6 @@ class APNs {
 	push: (deviceToken: string, headers: APNsHeaders, aps: ApsPayload) => Promise<Response>;
 	constructor(db: Database) {
 		const generateAuthToken = async () => {
-			const TOKEN_KEY = `
-            -----BEGIN PRIVATE KEY-----
-            MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgvjopbchDpzJNojnc
-            o7ErdZQFZM7Qxho6m61gqZuGVRigCgYIKoZIzj0DAQehRANCAAQ8ReU0fBNg+sA+
-            ZdDf3w+8FRQxFBKSD/Opt7n3tmtnmnl9Vrtw/nUXX4ldasxA2gErXR4YbEL9Z+uJ
-            REJP/5bp
-            -----END PRIVATE KEY-----
-            `;
-
 			const privateKeyPEM = TOKEN_KEY.replace('-----BEGIN PRIVATE KEY-----', '')
 				.replace('-----END PRIVATE KEY-----', '')
 				.replace(/\s/g, '');
@@ -197,8 +188,6 @@ class APNs {
 			const privateKey = await crypto.subtle.importKey('pkcs8', privateKeyArrayBuffer, { name: 'ECDSA', namedCurve: 'P-256' }, false, [
 				'sign',
 			]);
-			const TEAM_ID = 'FUWV6U942Q';
-			const AUTH_KEY_ID = 'BNY5GUGV38';
 			const JWT_ISSUE_TIME = util.getTimestamp();
 			const JWT_HEADER = btoa(JSON.stringify({ alg: 'ES256', kid: AUTH_KEY_ID }))
 				.replace('+', '-')
@@ -232,8 +221,6 @@ class APNs {
 		};
 
 		this.push = async (deviceToken: string, headers: APNsHeaders, aps: ApsPayload) => {
-			const TOPIC = 'me.uuneo.Meoworld';
-			const APNS_HOST_NAME = 'api.push.apple.com';
 			const AUTHENTICATION_TOKEN = await getAuthToken();
 
 			const apnsPriority = headers['apns-priority'];
@@ -334,8 +321,8 @@ class Handler {
 			let subtitle = parameters.subtitle as string | undefined;
 			let markdown = parameters.markdown as string | undefined;
 			let body = markdown || (parameters.body as string | undefined);
-
 			let sound = parameters.sound as string | undefined;
+
 			if (sound) {
 				if (!sound.endsWith('.caf')) {
 					sound += '.caf';
@@ -387,16 +374,18 @@ class Handler {
 			const excludeKeys = ['title', 'subtitle', 'body', 'sound', 'md', 'markdown', 'text', 'message', 'content', 'data', 'devicekey'];
 			for (const [key, value] of Object.entries(parameters)) {
 				if (!excludeKeys.includes(key) && value) {
-					(aps as Record<string, unknown>)[key] = value as unknown;
+					aps[key] = value as unknown;
 				}
 			}
 			const headers: APNsHeaders = {
-				'apns-topic': undefined,
+				'apns-topic': '',
 				'apns-id': undefined,
 				'apns-collapse-id': id,
 				'apns-priority': undefined,
-				'apns-expiration': undefined,
+				'apns-expiration': 0,
+				authorization: '',
 				'apns-push-type': _delete ? 'background' : 'alert',
+				'content-type': 'application/json',
 			};
 			const apns = new APNs(db);
 			const response = await apns.push(deviceToken, headers, aps);
@@ -499,17 +488,21 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, db: Dat
 							requestBody[key] = value;
 						});
 
-						if (pathParts.length === 2) {
-							requestBody.body = pathParts[1];
-						} else if (pathParts.length === 3) {
-							requestBody.title = pathParts[1];
-							requestBody.body = pathParts[2];
-						} else if (pathParts.length === 4) {
-							requestBody.title = pathParts[1];
-							requestBody.subtitle = pathParts[2];
-							requestBody.body = pathParts[3];
-						} else if (pathParts.length > 4) {
-							return jsonResponse({ code: 404, message: `Cannot ${request.method} ${realPathname}` });
+						switch (pathParts.length) {
+							case 2:
+								requestBody.body = pathParts[1];
+								break;
+							case 3:
+								requestBody.title = pathParts[1];
+								requestBody.body = pathParts[2];
+								break;
+							case 4:
+								requestBody.title = pathParts[1];
+								requestBody.subtitle = pathParts[2];
+								requestBody.body = pathParts[3];
+								break;
+							default:
+								return jsonResponse({ code: 404, message: `Cannot ${request.method} ${realPathname}` });
 						}
 					}
 
@@ -534,22 +527,16 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, db: Dat
 					let markdown = (requestBody.md as string | undefined) || (requestBody.markdown as string | undefined) || undefined;
 					if (markdown) requestBody.markdown = markdown;
 
-					if (contentType && !contentType.includes('application/json')) {
+					if (!contentType || !contentType.includes('application/json')) {
 						try {
-							if (requestBody.title) {
-								requestBody.title = decodeURIComponent(requestBody.title.replaceAll('\\+', '%20'));
-							}
-							if (requestBody.subtitle) {
-								requestBody.subtitle = decodeURIComponent(requestBody.subtitle.replaceAll('\\+', '%20'));
-							}
-							if (requestBody.body) {
-								requestBody.body = decodeURIComponent(requestBody.body.replaceAll('\\+', '%20'));
-							}
-							if (requestBody.markdown) {
-								requestBody.markdown = decodeURIComponent(requestBody.markdown.replaceAll('\\+', '%20'));
-							}
+							['title', 'subtitle', 'body', 'markdown'].forEach((key) => {
+								const val = requestBody[key];
+								if (typeof val === 'string' && val) {
+									requestBody[key] = decodeURIComponent(val.replace(/\+/g, ' '));
+								}
+							});
 						} catch (error) {
-							return jsonResponse({ code: 500, meaasge: `url path parse failed: ${error}` });
+							return jsonResponse({ code: 500, message: `URL parse failed: ${error}` });
 						}
 					}
 
@@ -560,10 +547,8 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, db: Dat
 							requestBody.devicekeys = decodeURIComponent(requestBody.devicekeys)
 								.trim()
 								.split(',')
-								.map((item) => item.replace(/"/g, '').trim());
-						}
-						if (typeof requestBody.devicekeys === 'string') {
-							requestBody.devicekeys = [requestBody.devicekeys];
+								.map((item) => item.replace(/"/g, '').trim())
+								.filter(Boolean);
 						}
 					}
 				} catch (error) {
