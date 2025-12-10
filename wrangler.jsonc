@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "nolets",
+	"name": "nolet-worker",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-12-09",
 	"compatibility_flags": ["nodejs_compat"],
@@ -15,7 +15,7 @@
 		{
 			"binding": "database",
 			"database_name": "database-nolet",
-			"database_id": "<unique-ID-for-your-database>"
+			"database_id": "5a017e6a-896c-451a-97d5-57f3388dc3e1"
 		}
 	],
 	// "kv_namespaces": [

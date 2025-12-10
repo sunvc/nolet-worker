@@ -498,6 +498,7 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, db: Dat
 						searchParams.forEach((value, key) => {
 							requestBody[key] = value;
 						});
+
 						if (pathParts.length === 2) {
 							requestBody.body = pathParts[1];
 						} else if (pathParts.length === 3) {
@@ -587,7 +588,7 @@ async function handle(request: Request, env: Env, ctx: ExecutionContext, db: Dat
 					});
 				}
 				if (realPathname != '/push') {
-					requestBody.devicekey = pathParts[1];
+					requestBody.devicekey = pathParts[0];
 				}
 				if (!requestBody.devicekey) {
 					return jsonResponse({ code: 400, message: 'device key is empty' });
