@@ -335,10 +335,7 @@ class Handler {
 			const _delete = !title && !subtitle && !body && id;
 			const aps: ApsPayload = {
 				aps: _delete
-					? {
-							'content-available': 1,
-							'mutable-content': 1,
-					  }
+					? { 'content-available': 1 }
 					: {
 							alert: {
 								title: title,

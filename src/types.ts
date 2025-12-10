@@ -61,6 +61,14 @@ export type RequestBodyMap = Record<string, unknown> & {
 	title?: string;
 	subtitle?: string;
 	markdown?: string;
+	text?: string;
+	message?: string;
+	content?: string;
+	data?: string;
+	level?: 'passive' | 'active' | 'time-sensitive' | 'critical';
+	image?: string;
+	icon?: string | string[];
+	url?: string;
 };
 
 export interface Database {
