@@ -1,3 +1,8 @@
+const VERSION = "v0.0.1";
+const BUILD = "2025-09-20 16:01:13";
+const ARCH = "Node";
+const COMMIT = "2bec695dff5d3c71559ac61088a970ad0de59b48";
+
 export default {
   async fetch(request, env, ctx) {
     return await handleRequest(request, env, ctx);
@@ -245,10 +250,6 @@ async function handleRequest(request, env, ctx) {
 
 class Handler {
   constructor(env, options) {
-    this.version = "v0.0.2";
-    this.build = "2025-09-27 10:01:02";
-    this.arch = "js";
-    this.commit = "2bec695dff5d3c71559ac61088a970ad0de59b48";
     this.allowNewDevice = options.allowNewDevice;
     this.allowQueryNums = options.allowQueryNums;
     const db = new Database(env);
@@ -386,10 +387,10 @@ class Handler {
 
       return new Response(
         JSON.stringify({
-          version: this.version,
-          build: this.build,
-          arch: this.arch,
-          commit: this.commit,
+          version: VERSION,
+          build: BUILD,
+          arch: ARCH,
+          commit: COMMIT,
           devices: this.devices,
         }),
         {
