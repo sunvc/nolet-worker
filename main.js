@@ -25,9 +25,10 @@ async function handleRequest(request, env, ctx) {
       : true;
   const rootPath = env.ROOT_PATH || "/";
   const basicAuth = env.BASIC_AUTH;
+  const mode = env.MODE;
 
   const { searchParams, pathname } = new URL(request.url);
-  const handler = new Handler(env, { allowNewDevice, allowQueryNums });
+  const handler = new Handler(env, { allowNewDevice, allowQueryNums, mode });
   const realPathname = pathname.replace(
     new RegExp("^" + rootPath.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&")),
     "/"
@@ -255,6 +256,7 @@ class Handler {
   constructor(env, options) {
     this.allowNewDevice = options.allowNewDevice;
     this.allowQueryNums = options.allowQueryNums;
+    this.mode = options.mode;
     const db = new Database(env);
 
     this.restore = async (key) => {
@@ -561,7 +563,7 @@ class Handler {
         "apns-push-type": _delete ? "background" : "alert",
       };
 
-      const apns = new APNs(db);
+      const apns = new APNs(db, this.mode);
       const response = await apns.push(deviceToken, headers, aps);
 
       if (response.status === 200) {
@@ -614,7 +616,7 @@ class Handler {
 }
 
 class APNs {
-  constructor(db) {
+  constructor(db, mode) {
     const generateAuthToken = async () => {
       const TOKEN_KEY = `
             -----BEGIN PRIVATE KEY-----
@@ -690,7 +692,8 @@ class APNs {
 
     this.push = async (deviceToken, headers, aps) => {
       const TOPIC = "me.uuneo.Meoworld";
-      const APNS_HOST_NAME = "api.push.apple.com";
+      const APNS_HOST_NAME =
+        mode === "dev" ? "api.sandbox.push.apple.com" : "api.push.apple.com";
       const AUTHENTICATION_TOKEN = await getAuthToken();
 
       return await fetch(`https://${APNS_HOST_NAME}/3/device/${deviceToken}`, {
